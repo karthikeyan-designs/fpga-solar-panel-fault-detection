@@ -34,7 +34,7 @@ The system follows a **hardware–software co-design architecture**, where compu
 
 ### Architecture Overview
 
-![System Architecture]
+![System Architecture](docs/block.png)
 ### Data Flow
 
 1. **Image Acquisition (HPS)**
