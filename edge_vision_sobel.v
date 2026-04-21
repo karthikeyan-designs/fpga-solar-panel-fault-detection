@@ -1,0 +1,210 @@
+module edge_vision_sobel (
+
+    ///////// CLOCK /////////
+    input              CLOCK_50,
+
+    ///////// RESET /////////
+    input              rst_n,
+
+    //////////// HPS //////////
+    inout                       HPS_CONV_USB_N,
+    output          [14:0]      HPS_DDR3_ADDR,
+    output           [2:0]      HPS_DDR3_BA,
+    output                      HPS_DDR3_CAS_N,
+    output                      HPS_DDR3_CKE,
+    output                      HPS_DDR3_CK_N,
+    output                      HPS_DDR3_CK_P,
+    output                      HPS_DDR3_CS_N,
+    output           [3:0]      HPS_DDR3_DM,
+    inout            [31:0]     HPS_DDR3_DQ,
+    inout             [3:0]     HPS_DDR3_DQS_N,
+    inout             [3:0]     HPS_DDR3_DQS_P,
+    output                      HPS_DDR3_ODT,
+    output                      HPS_DDR3_RAS_N,
+    output                      HPS_DDR3_RESET_N,
+    input                       HPS_DDR3_RZQ,
+    output                      HPS_DDR3_WE_N,
+    output                      HPS_ENET_GTX_CLK,
+    inout                       HPS_ENET_INT_N,
+    output                      HPS_ENET_MDC,
+    inout                       HPS_ENET_MDIO,
+    input                       HPS_ENET_RX_CLK,
+    input             [3:0]     HPS_ENET_RX_DATA,
+    input                       HPS_ENET_RX_DV,
+    output            [3:0]     HPS_ENET_TX_DATA,
+    output                      HPS_ENET_TX_EN,
+    inout             [3:0]     HPS_FLASH_DATA,
+    output                      HPS_FLASH_DCLK,
+    output                      HPS_FLASH_NCSO,
+    inout             [1:0]     HPS_GPIO,
+    inout                       HPS_GSENSOR_INT,
+    inout                       HPS_I2C1_SCLK,
+    inout                       HPS_I2C1_SDAT,
+    inout                       HPS_I2C2_SCLK,
+    inout                       HPS_I2C2_SDAT,
+    inout                       HPS_I2C_CONTROL,
+    inout                       HPS_KEY,
+    inout                       HPS_LED,
+    output                      HPS_SD_CLK,
+    inout                       HPS_SD_CMD,
+    inout             [3:0]     HPS_SD_DATA,
+    output                      HPS_SPIM_CLK,
+    input                       HPS_SPIM_MISO,
+    output                      HPS_SPIM_MOSI,
+    inout                       HPS_SPIM_SS,
+    input                       HPS_UART_RX,
+    output                      HPS_UART_TX,
+    input                       HPS_USB_CLKOUT,
+    inout             [7:0]     HPS_USB_DATA,
+    input                       HPS_USB_DIR,
+    input                       HPS_USB_NXT,
+    output                      HPS_USB_STP
+);
+
+    // =========================================================
+    // PIO Signals from Platform Designer
+    // =========================================================
+    wire [31:0] pixel_in;
+    wire [7:0]  pixel_out;
+    wire        data_valid;
+
+    // =========================================================
+    // SOBEL FILTER INTERNAL LOGIC
+    // =========================================================
+    reg [7:0] line_buffer [0:2][0:2];
+
+    reg signed [11:0] sumX, sumY;
+    reg signed [11:0] absX_temp, absY_temp;
+    reg [11:0] absX, absY;
+    reg [12:0] magnitude;
+
+    reg [7:0] pixel_out_reg;
+
+    // 2-flop synchronizer for data_valid
+    reg dv_ff1, dv_ff2;
+    wire data_valid_rise;
+
+    parameter THRESHOLD = 0;  // was 70, catch weaker edges
+    parameter GAIN      = 1;   // was 2, boost faint responses
+
+    wire signed [3:0] Gx [0:2][0:2];
+    wire signed [3:0] Gy [0:2][0:2];
+
+    integer i, j;
+
+    assign data_valid_rise = dv_ff1 & ~dv_ff2;
+
+    // Sobel Kernels
+    assign Gx[0][0] =  1;  assign Gx[0][1] =  0;  assign Gx[0][2] = -1;
+    assign Gx[1][0] =  2;  assign Gx[1][1] =  0;  assign Gx[1][2] = -2;
+    assign Gx[2][0] =  1;  assign Gx[2][1] =  0;  assign Gx[2][2] = -1;
+
+    assign Gy[0][0] =  1;  assign Gy[0][1] =  2;  assign Gy[0][2] =  1;
+    assign Gy[1][0] =  0;  assign Gy[1][1] =  0;  assign Gy[1][2] =  0;
+    assign Gy[2][0] = -1;  assign Gy[2][1] = -2;  assign Gy[2][2] = -1;
+
+    // Synchronizer
+    always @(posedge CLOCK_50 or negedge rst_n) begin
+        if (!rst_n) begin
+            dv_ff1 <= 1'b0;
+            dv_ff2 <= 1'b0;
+        end
+        else begin
+            dv_ff1 <= data_valid;
+            dv_ff2 <= dv_ff1;
+        end
+    end
+
+    // Sobel processing
+    always @(posedge CLOCK_50 or negedge rst_n) begin
+        if (!rst_n) begin
+            pixel_out_reg <= 8'd0;
+            sumX          <= 12'sd0;
+            sumY          <= 12'sd0;
+            absX_temp     <= 12'sd0;
+            absY_temp     <= 12'sd0;
+            absX          <= 12'd0;
+            absY          <= 12'd0;
+            magnitude     <= 13'd0;
+
+            for (i = 0; i < 3; i = i + 1)
+                for (j = 0; j < 3; j = j + 1)
+                    line_buffer[i][j] <= 8'd0;
+        end
+        else begin
+            if (data_valid_rise) begin
+
+                // shift old columns
+                for (i = 0; i < 3; i = i + 1) begin
+                    line_buffer[i][0] <= line_buffer[i][1];
+                    line_buffer[i][1] <= line_buffer[i][2];
+                end
+
+                // load new column
+                line_buffer[0][2] <= pixel_in[23:16];
+                line_buffer[1][2] <= pixel_in[15:8];
+                line_buffer[2][2] <= pixel_in[7:0];
+
+                // compute on previous window
+                sumX = 12'sd0;
+                sumY = 12'sd0;
+
+                for (i = 0; i < 3; i = i + 1)
+                    for (j = 0; j < 3; j = j + 1) begin
+                        sumX = sumX + ($signed({4'd0, line_buffer[i][j]}) * $signed(Gx[i][j]));
+                        sumY = sumY + ($signed({4'd0, line_buffer[i][j]}) * $signed(Gy[i][j]));
+                    end
+
+                absX_temp = (sumX < 0) ? -sumX : sumX;
+                absY_temp = (sumY < 0) ? -sumY : sumY;
+                absX      = absX_temp[11:0];
+                absY      = absY_temp[11:0];
+
+                magnitude = (absX + absY) * GAIN;
+
+                if (magnitude > THRESHOLD) begin
+                    if (magnitude > 13'd255)
+                        pixel_out_reg <= 8'd255;
+                    else
+                        pixel_out_reg <= magnitude[7:0];
+                end
+                else begin
+                    pixel_out_reg <= 8'd0;
+                end
+            end
+        end
+    end
+
+    assign pixel_out = pixel_out_reg;
+
+    // =========================================================
+    // PLATFORM DESIGNER SYSTEM INSTANTIATION
+    // =========================================================
+    edgevision_pd u0 (
+        .clk_clk                                   (CLOCK_50),
+        .reset_reset_n                             (rst_n),
+        .memory_mem_a                              (HPS_DDR3_ADDR),
+        .memory_mem_ba                             (HPS_DDR3_BA),
+        .memory_mem_ck                             (HPS_DDR3_CK_P),
+        .memory_mem_ck_n                           (HPS_DDR3_CK_N),
+        .memory_mem_cke                            (HPS_DDR3_CKE),
+        .memory_mem_cs_n                           (HPS_DDR3_CS_N),
+        .memory_mem_ras_n                          (HPS_DDR3_RAS_N),
+        .memory_mem_cas_n                          (HPS_DDR3_CAS_N),
+        .memory_mem_we_n                           (HPS_DDR3_WE_N),
+        .memory_mem_reset_n                        (HPS_DDR3_RESET_N),
+        .memory_mem_dq                             (HPS_DDR3_DQ),
+        .memory_mem_dqs                            (HPS_DDR3_DQS_P),
+        .memory_mem_dqs_n                          (HPS_DDR3_DQS_N),
+        .memory_mem_odt                            (HPS_DDR3_ODT),
+        .memory_mem_dm                             (HPS_DDR3_DM),
+        .memory_oct_rzqin                          (HPS_DDR3_RZQ),
+        .pixel_in_pio_external_connection_export   (pixel_in),
+        .pixel_out_pio_external_connection_export  (pixel_out),
+        .data_valid_pio_external_connection_export (data_valid)
+    );
+
+endmodule
+
+
+
