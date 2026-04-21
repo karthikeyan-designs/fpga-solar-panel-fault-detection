@@ -30,42 +30,36 @@ This project implements an **FPGA-based hardware accelerator** on the **DE1-SoC 
 
 ## System Architecture
 
-```
-Camera (Satellite)
-      │
-      ▼ .BMP file
- ┌─────────────────────────────────────┐
- │  HPS — ARM Cortex-A9 (Linux)        │
- │  • Grayscale conversion             │
- │  • Gaussian blur + contrast boost   │
- │  • 512×512 resize & crop            │
- │  • Control & scheduling             │
- └────────────┬────────────────────────┘
-              │ AXI Bridge (Lightweight)
-              ▼
- ┌─────────────────────────────────────┐
- │  FPGA Fabric (Cyclone V)            │
- │  • Line buffer (3-row shift reg.)   │
- │  • Sobel convolution (Gx, Gy)       │
- │  • Gradient magnitude ≈ |Gx|+|Gy|  │
- │  • Thresholding → 8-bit edge map    │
- └────────────┬────────────────────────┘
-              │ Edge map via AXI
-              ▼
- ┌─────────────────────────────────────┐
- │  HPS — Post-processing & classify   │
- │  • Adaptive thresholding            │
- │  • Morphological filtering          │
- │  • Skeletonisation (Zhang-Suen)     │
- │  • Feature extraction               │
- │  • Rule-based classifier            │
- └─────────────────────────────────────┘
-              │
-              ▼
-   Output: annotated BMP + fault label
-```
+The system follows a **hardware–software co-design architecture**, where computationally intensive image processing is accelerated on FPGA, while control and decision-making are handled by the HPS (ARM processor).
 
----
+### Architecture Overview
+
+![System Architecture]
+### Data Flow
+
+1. **Image Acquisition (HPS)**
+   - Input solar panel image (.BMP)
+   - Preprocessing: grayscale, resize, noise filtering
+
+2. **HPS → FPGA Transfer**
+   - Pixel data sent via AXI Lightweight bridge (memory-mapped I/O)
+
+3. **FPGA Processing**
+   - Line buffer generates 3×3 sliding window  
+   - Sobel convolution computes **Gx, Gy**  
+   - Gradient magnitude ≈ |Gx| + |Gy|  
+   - Thresholding → Edge map (8-bit)
+
+4. **FPGA → HPS Return**
+   - Edge-detected image transferred back
+
+5. **HPS Post-processing**
+   - Morphological filtering  
+   - Feature extraction  
+   - Crack & dust classification  
+
+6. **Output**
+   - Annotated image + defect label (Crack / Dust / Clean)
 
 ## Features
 
@@ -206,11 +200,10 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 
 ## Team
 
-
-| Karthikeyan S
-| Aparna S M 
-| Muhammad Jamaldeen S 
-| Phinehas Samuel S 
+- **Karthikeyan S**  
+- **Aparna S M**  
+- **Muhammad Jamaldeen S** 
+- **Phinehas Samuel S**  
 
 
 
