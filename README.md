@@ -13,8 +13,6 @@
 - [Results](#results)
 - [Team](#team)
 - [Supervisor](#supervisor)
-- [License](#license)
-
 ---
 
 ## Overview
@@ -208,24 +206,19 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 
 ## Team
 
-| Name | Roll Number |
-|------|-------------|
-| Karthikeyan S | 311122106001 |
-| Aparna S M | 311122106009 |
-| Muhammad Jamaldeen S | 311122106043 |
-| Phinehas Samuel S | 311122106046 |
 
-**Department of Electronics and Communication Engineering**
-Loyola–ICAM College of Engineering & Technology (LICET), Chennai — 600034
-Anna University, April 2026
+| Karthikeyan S
+| Aparna S M 
+| Muhammad Jamaldeen S 
+| Phinehas Samuel S 
+
+
 
 ---
 
 ## Supervisor
 
 **Dr. A. Anitha Juliette** — Professor, Dept. of ECE, LICET
-**Ms. L. J. Jenifer Suriya** — Assistant Professor & Head, Dept. of ECE, LICET
-
 ---
 
 ## License
