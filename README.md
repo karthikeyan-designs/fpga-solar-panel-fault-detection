@@ -46,14 +46,15 @@ The system follows a **hardware–software co-design architecture**, where compu
 <p align="center">
   <img src="docs/pd_interface.png" width="600"/>
 </p>
+<p align="center"><em>Platform Designer setup showing HPS–FPGA AXI interface and PIO connections</em></p>
 
 The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using memory-mapped PIO registers.
 
 - `pixel_out_pio` → Sends pixel data from HPS to FPGA  
 - `pixel_in_pio` → Reads processed edge data from FPGA  
-- `data_valid_pio` → Handshaking (start/done)
+- `data_valid_pio` → Synchronization signal for valid data transfer  
 
-> Uses memory-mapped I/O via LW AXI bridge for efficient data transfer.
+> Uses memory-mapped I/O via LW AXI bridge (e.g., base address 0xFF200000) for low-latency communication.
 3. **FPGA Processing**
    - Line buffer generates 3×3 sliding window  
    - Sobel convolution computes **Gx, Gy**  
