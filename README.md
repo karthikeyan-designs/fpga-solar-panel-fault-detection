@@ -243,6 +243,4 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 - **Dr. A. Anitha Juliette** — Professor
 ---
 
-## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
