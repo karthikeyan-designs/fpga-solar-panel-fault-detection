@@ -216,16 +216,14 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 
 - **Karthikeyan S**  
 - **Aparna S M**  
-- **Muhammad Jamaldeen S** 
-- **Phinehas Samuel S**  
-
-
+- **Muhammad Jamaldeen S**  
+- **Phinehas Samuel S**
 
 ---
 
 ## Supervisor
 
-**Dr. A. Anitha Juliette** — Professor, Dept. of ECE, LICET
+- **Dr. A. Anitha Juliette** — Professor
 ---
 
 ## License
