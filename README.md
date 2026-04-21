@@ -142,46 +142,41 @@ fpga-solar-panel-fault-detection/
 
 ---
 
-## Getting Started
+## Usage (DE1-SoC)
 
-### 1. Clone the repository
+> Execution is performed directly on the DE1-SoC (HPS Linux environment).
 
-```bash
-git clone https://github.com/<your-username>/fpga-solar-panel-fault-detection.git
-cd fpga-solar-panel-fault-detection
-```
-
-### 2. Program the FPGA
-
-1. Open `fpga/quartus_project.qpf` in **Quartus Prime**
-2. Run **Platform Designer** to regenerate the system if needed
-3. Compile the project (Processing → Start Compilation)
-4. Program the DE1-SoC via JTAG using the Programmer tool
-
-### 3. Build the HPS binary
-
-Cross-compile on your host machine:
+### 1. Mount USB Drive
 
 ```bash
-cd hps/
-make
+ls /dev/sd*
+mkdir -p /mnt/usb
+mount -t vfat /dev/sda1 /mnt/usb
+```
+### 2. Copy Input Files
+```
+cp -r /mnt/input_realtime_images /home/root/
+cp /mnt/fpga_multi_sobel_clean.c /home/root/
+```
+### 3. Compile on HPS
+```
+gcc -std=c99 -O1 -o phy fpga_multi_sobel_clean.c -lrt -lm
+```
+### 4. Run Programs
+```
+./sobel_dfftime
+```
+### 5. Copy Output to USB
+```
+cp /home/root/sobel_fifo_out.bmp /mnt/usb/
+cp -r /home/root/fpga_sobel_realtime_mixed /mnt/usb/
+
+ls /mnt/usb
+
+sync
+umount /mnt/usb
 ```
 
-This produces a `sobel_defftime` binary compiled with `arm-linux-gnueabihf-gcc`.
-
-### 4. Transfer and run on DE1-SoC
-
-```bash
-# Copy binary and dataset to the board
-scp sobel_defftime root@<DE1-SoC-IP>:~/
-scp -r ../dataset/ root@<DE1-SoC-IP>:~/
-
-# SSH into the board and run
-ssh root@<DE1-SoC-IP>
-./sobel_defftime
-```
-
-Output images are written to `output_results/` on the board's filesystem.
 
 ### 5. Verify with MATLAB (optional)
 
