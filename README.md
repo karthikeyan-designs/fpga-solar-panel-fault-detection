@@ -42,8 +42,18 @@ The system follows a **hardware–software co-design architecture**, where compu
    - Preprocessing: grayscale, resize, noise filtering
 
 2. **HPS → FPGA Transfer**
-   - Pixel data sent via AXI Lightweight bridge (memory-mapped I/O)
 
+<p align="center">
+  <img src="docs/pd_interface.png" width="600"/>
+</p>
+
+The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using memory-mapped PIO registers.
+
+- `pixel_out_pio` → Sends pixel data from HPS to FPGA  
+- `pixel_in_pio` → Reads processed edge data from FPGA  
+- `data_valid_pio` → Handshaking (start/done)
+
+> Uses memory-mapped I/O via LW AXI bridge for efficient data transfer.
 3. **FPGA Processing**
    - Line buffer generates 3×3 sliding window  
    - Sobel convolution computes **Gx, Gy**  
