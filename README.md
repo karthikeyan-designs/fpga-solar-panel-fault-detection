@@ -176,6 +176,28 @@ ls /mnt/usb
 sync
 umount /mnt/usb
 ```
+### Copy Files from USB to SD Card (HPS)
+
+#### 1. Mount USB Drive
+
+```bash
+mkdir -p /mnt
+mount /dev/sda1 /mnt
+```
+### 2. Verify Mounted Files
+```
+ls /mnt/usb
+```
+### 3. Copy Files to HPS (SD Card)
+```
+cp -r /mnt/input_realtime_images /home/root/
+cp /mnt/fpga_multi_sobel_clean.c /home/root/
+```
+### 4. Unmount USB Drive
+```
+sync
+umount /mnt
+```
 
 
 ### 5. Verify with MATLAB (optional)
