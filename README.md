@@ -255,25 +255,29 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 
 ### Execution Time Comparison (Console Outputs)
 
-<p align="center">
-  <img src="results/cpu_r3_single.png" width="300"/>
-  <img src="results/cpu_r3_multi.png" width="300"/>
-</p>
+<table align="center">
+  <tr>
+    <td><img src="docs/cpu_r3_single.png" height="260"/></td>
+    <td><img src="docs/cpu_r3_multi.png" height="260"/></td>
+  </tr>
+</table>
 <p align="center"><em>CPU (Ryzen 3) execution time for single and multiple images</em></p>
 
-<p align="center">
-  <img src="results/cpu_r7_single.jpeg" width="300"/>
-  <img src="results/cpu_r7_multi.jpeg" width="300"/>
-</p>
+<table align="center">
+  <tr>
+    <td><img src="docs/cpu_r7_single.jpeg" height="260"/></td>
+    <td><img src="docs/cpu_r7_multi.jpeg" height="260"/></td>
+  </tr>
+</table>
 <p align="center"><em>CPU (Ryzen 7) execution time for single and multiple images</em></p>
 
-<p align="center">
-  <img src="results/HPS_TIME_MULTI.png" width="300"/>
-  <img src="results/FPGA_TIME_MULTI.png" width="300"/>
-</p>
+<table align="center">
+  <tr>
+    <td><img src="docs/FPGA_1_time.png" height="260"/></td>
+    <td><img src="docs/FPGA_TIME_MULTI.png" height="260"/></td>
+  </tr>
+</table>
 <p align="center"><em>HPS–FPGA execution time for single and multiple images</em></p>
-
----
 
 ### Key Insight
 
