@@ -12,6 +12,7 @@
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
+- [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
 
@@ -295,6 +296,18 @@ The results demonstrate that the **HPS–FPGA hardware–software co-design appr
 By offloading the computationally intensive Sobel edge detection to the FPGA, the system achieves faster processing through hardware-level execution, while the HPS efficiently manages control and post-processing tasks.
 
 This combination enables **low-latency and efficient image processing**, making the approach suitable for real-time embedded applications.
+
+---
+## Limitations & Future Work
+
+- Current Sobel implementation is **not fully pipelined**; introducing staged pipelining can improve throughput  
+- Integrating **FIFO buffers and DMA in Platform Designer** can optimize data transfer and further reduce execution time  
+- Fault detection uses a **rule-based approach**, which may lead to misclassification in complex scenarios
+
+### Future Scope
+
+- Enable **real-time video processing using camera interfaces**, replacing static image-based input  
+- Incorporate **AI/ML-based models** on FPGA or HPS to improve detection accuracy and robustness  
 
 ## Team
 
