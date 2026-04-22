@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Key Design Highlights](#key-design-highlights)
 - [System Architecture](#system-architecture)
 - [Hardware Setup](#hardware-setup)
 - [Features](#features)
@@ -26,6 +27,14 @@ This project implements an **FPGA-based hardware accelerator** on the **DE1-SoC 
 - 🔴 Physical damage (cracks / fractures)
 - 🟡 Dust / surface contamination
 - 🟢 Clean panel
+
+---
+## Key Design Highlights
+
+- Designed a hardware–software co-design system using HPS–FPGA architecture  
+- Accelerated Sobel edge detection using Verilog-based FPGA implementation  
+- Implemented memory-mapped AXI interface via PIO for efficient data transfer  
+- Achieved ~2× speedup compared to CPU-based implementation
 
 ---
 
@@ -120,47 +129,47 @@ The design is synthesized and programmed using **Quartus Prime**, and the succes
 | Image format | BMP (512×512, 8-bit grayscale) |
 
 ---
-
 ## Repository Structure
-
 ```
 fpga-solar-panel-fault-detection/
 ├── README.md
-├── LICENSE
-├── .gitignore
-├── report.pdf                        # Full project report
 │
-├── fpga/                             # Verilog source & Quartus project
-│   ├── sobel_edge_detect.v           # Top-level Sobel module
-│   ├── sobel_tb.v                    # Verilog testbench
-│   ├── platform_designer.qsys        # Platform Designer system
-│   └── quartus_project.qpf           # Quartus project file
+├── fpga/ # Verilog RTL + Quartus project
+│ ├── edge_vision_sobel.v # Sobel edge detection module
+│ ├── tb_sobel.v # Verilog testbench
+│ ├── edgevision_pd.qsys # Platform Designer system
+│ └── edge_vision_sobel.qpf # Quartus project file
 │
-├── hps/                              # C code running on ARM HPS
-│   ├── main.c                        # Pipeline entry point
-│   ├── classifier.c / classifier.h   # Crack, dust, clean logic
-│   ├── bmp_utils.c / bmp_utils.h     # BMP read/write helpers
-│   └── Makefile                      # Cross-compilation Makefile
+├── hps/ # C code (HPS-side processing)
+│ ├── hps_fpga_io.c # HPS–FPGA communication
+│ └── hps_feature_extraction.c # Crack & dust detection logic
 │
-├── matlab/                           # Reference & verification scripts
-│   ├── sobel_reference.m             # MATLAB Sobel reference model
-│   └── hex_to_bmp.m                  # Convert testbench HEX → BMP
+├── matlab/ # Verification & utilities
+│ ├── sobel_matlab.m # MATLAB reference implementation
+│ ├── jpg_bmp_conversion.m # Image conversion utility
+│ └── jpeg_bmp_conversion.m # Alternate conversion script
 │
-├── dataset/                          # Sample solar panel images
-│   ├── clean/
-│   ├── dust/
-│   └── physical_damage/
+├── dataset/ # Sample input images
+│ ├── clean/
+│ ├── dust/
+│ └── physical_damages/
 │
-├── results/                          # Output images & performance data
-│   ├── edge_fpga_*.bmp
-│   └── performance_comparison.png
+├── results/ # Output results and detections
+│ ├── fpga_sobel_edge_detections/
+│ ├── hps_crack_detections/
+│ └── hps_dust_detections/
 │
-└── docs/                             # Diagrams and figures
-    ├── block_diagram.png
-    └── flowchart.png
+└── docs/ # Diagrams and execution screenshots
+├── block.png
+├── pd_interface.png
+├── sobel_kernel.png
+├── de1soc_setup.jpeg
+├── quartus_programmer.png
+└── execution_time_images...
+
 ```
 
-> **Note:** The `dataset/` folder contains only sample images. The full 16-image ground-truth set used for validation is not included due to size. Place your own `.bmp` images in the respective subfolders before running.
+> Note: Only sample images are included...
 
 ---
 
