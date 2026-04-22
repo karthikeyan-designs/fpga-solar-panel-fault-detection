@@ -88,12 +88,8 @@ The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using
 
 <p align="center">
   <img src="docs/de1soc_setup.jpeg" width="400"/>
-  <img src="docs/quartus_programmer.png" width="400"/>
+  <img src="docs/quartus_programmer.png" width="500"/>
 </p>
-<p align="center">
-  <em>Left: DE1-SoC FPGA board connected to host system | Right: Quartus Programmer showing successful FPGA configuration (100%)</em>
-</p>
-
 The FPGA design is deployed on the DE1-SoC board, where the HPS communicates with the FPGA fabric to perform hardware-accelerated Sobel edge detection and defect analysis.  
 The design is synthesized and programmed using Quartus Prime, and the successful configuration of the FPGA is verified through the Programmer tool.
 
