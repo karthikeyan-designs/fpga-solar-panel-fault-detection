@@ -6,12 +6,14 @@
 
 - [Overview](#overview)
 - [System Architecture](#system-architecture)
+- [Hardware Setup](#hardware-setup)
 - [Features](#features)
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
 - [Team](#team)
 - [Supervisor](#supervisor)
+
 ---
 
 ## Overview
@@ -57,7 +59,7 @@ The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using
 - `data_valid_pio` → Synchronization signal for valid data transfer  
 
 > Uses memory-mapped I/O via LW AXI bridge (e.g., base address 0xFF200000) for low-latency communication.
-3. **FPGA Processing**
+3. **Sobel Edge Detection (FPGA Implementation)**
 
 <p align="center">
   <img src="docs/sobel_kernel.png" width="600"/>
@@ -82,6 +84,18 @@ The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using
 
 6. **Output**
    - Annotated image + defect label (Crack / Dust / Clean)
+## Hardware Setup
+
+<p align="center">
+  <img src="docs/de1soc_setup.jpg" width="400"/>
+  <img src="docs/quartus_programmer.png" width="400"/>
+</p>
+<p align="center">
+  <em>Left: DE1-SoC FPGA board connected to host system | Right: Quartus Programmer showing successful FPGA configuration (100%)</em>
+</p>
+
+The FPGA design is deployed on the DE1-SoC board, where the HPS communicates with the FPGA fabric to perform hardware-accelerated Sobel edge detection and defect analysis.  
+The design is synthesized and programmed using Quartus Prime, and the successful configuration of the FPGA is verified through the Programmer tool.
 
 ## Features
 
