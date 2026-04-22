@@ -9,7 +9,6 @@
 - [Features](#features)
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
-- [Getting Started](#getting-started)
 - [Results](#results)
 - [Team](#team)
 - [Supervisor](#supervisor)
@@ -63,6 +62,9 @@ The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using
    - Sobel convolution computes **Gx, Gy**  
    - Gradient magnitude ≈ |Gx| + |Gy|  
    - Thresholding → Edge map (8-bit)
+> These operations are implemented in FPGA because they are **pixel-level, computation-intensive tasks**.  
+> The FPGA performs these operations in hardware using dedicated logic, enabling **faster execution compared to sequential CPU processing**.  
+> This results in reduced execution time for image processing tasks such as Sobel edge detection.
 
 4. **FPGA → HPS Return**
    - Edge-detected image transferred back
