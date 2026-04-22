@@ -257,8 +257,8 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 
 <table align="center">
   <tr>
-    <td><img src="docs/cpu_r3_single.png" height="260"/></td>
-    <td><img src="docs/cpu_r3_multi.png" height="260"/></td>
+    <td><img src="docs/cpu_r3_single.png" height="220"/></td>
+    <td><img src="docs/cpu_r3_multi.png" height="220"/></td>
   </tr>
 </table>
 <p align="center"><em>CPU (Ryzen 3) execution time for single and multiple images</em></p>
