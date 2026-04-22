@@ -87,7 +87,7 @@ The HPS communicates with the FPGA through the **AXI Lightweight bridge**, using
 ## Hardware Setup
 
 <p align="center">
-  <img src="docs/de1soc_setup.jpg" width="400"/>
+  <img src="docs/de1soc_setup.jpeg" width="400"/>
   <img src="docs/quartus_programmer.png" width="400"/>
 </p>
 <p align="center">
