@@ -268,7 +268,7 @@ The FPGA implementation achieves approximately **2× speedup** over CPU implemen
 <p align="center"><em>CPU (Ryzen 7) execution time for single and multiple images</em></p>
 
 <p align="center">
-  <img src="results/HPS_TIME_MULTI.png" width="300"/>
+  <img src="results/FPGA_1_time.png" width="300"/>
   <img src="results/FPGA_TIME_MULTI.png" width="300"/>
 </p>
 <p align="center"><em>HPS–FPGA execution time for single and multiple images</em></p>
