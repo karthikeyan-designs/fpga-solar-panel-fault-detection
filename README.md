@@ -239,6 +239,8 @@ Open `matlab/sobel_reference.m` and point it to any test image to compare MATLAB
 | Clean | 4 | 5 | 80% |
 | **Overall** | **13** | **15** | **86.67%** |
 
+---
+
 ### Performance Comparison
 
 | Method | Hardware | 1 Image (ms) | 5 Images (ms) |
@@ -247,9 +249,39 @@ Open `matlab/sobel_reference.m` and point it to any test image to compare MATLAB
 | CPU (Python) | AMD Ryzen 7 6800H, 16 GB RAM | 1259.83 | 6080.18 |
 | **HPS–FPGA** | **DE1-SoC (50 MHz FPGA, 800 MHz ARM A9)** | **981.25** | **4906.65** |
 
-The FPGA implementation achieves approximately **2× speedup** over CPU implementations by exploiting parallel convolution and gradient computation in hardware.
+The FPGA implementation achieves approximately **2× speedup** over CPU implementations.
 
 ---
+
+### Execution Time Comparison (Console Outputs)
+
+<p align="center">
+  <img src="results/cpu_r3_single.png" width="300"/>
+  <img src="results/cpu_r3_multi.png" width="300"/>
+</p>
+<p align="center"><em>CPU (Ryzen 3) execution time for single and multiple images</em></p>
+
+<p align="center">
+  <img src="results/cpu_r7_single.jpeg" width="300"/>
+  <img src="results/cpu_r7_multi.jpeg" width="300"/>
+</p>
+<p align="center"><em>CPU (Ryzen 7) execution time for single and multiple images</em></p>
+
+<p align="center">
+  <img src="results/HPS_TIME_MULTI.png" width="300"/>
+  <img src="results/FPGA_TIME_MULTI.png" width="300"/>
+</p>
+<p align="center"><em>HPS–FPGA execution time for single and multiple images</em></p>
+
+---
+
+### Key Insight
+
+The results demonstrate that the **HPS–FPGA hardware–software co-design approach significantly reduces execution time** compared to CPU-only implementations.
+
+By offloading the computationally intensive Sobel edge detection to the FPGA, the system achieves faster processing through hardware-level execution, while the HPS efficiently manages control and post-processing tasks.
+
+This combination enables **low-latency and efficient image processing**, making the approach suitable for real-time embedded applications.
 
 ## Team
 
