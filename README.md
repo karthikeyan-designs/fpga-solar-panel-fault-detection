@@ -373,9 +373,6 @@ wire data_valid_rise = dv_ff1 & ~dv_ff2;
 - Before fix: Repeated buffer shifts produce excessive black pixels (incorrect edges)  
 - After fix: Single-cycle execution yields correct edge-detected image matching testbench  
 
-- Before fix: Repeated buffer shifts produce excessive black pixels (incorrect edges)  
-- After fix: Single-cycle execution yields correct edge-detected image matching testbench  
-
 ## Limitations & Future Work
 
 - Current Sobel implementation is **not fully pipelined**; introducing staged pipelining can improve throughput  
