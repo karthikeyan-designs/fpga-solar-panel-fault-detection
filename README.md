@@ -12,7 +12,7 @@
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
-- [Debugging & Validation](#debugging-&-validation)
+- [Debugging & Validation](#debugging--validation)
 - [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
