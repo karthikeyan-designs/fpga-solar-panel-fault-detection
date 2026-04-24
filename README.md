@@ -239,7 +239,7 @@ The edge-detected output generated from the testbench was compared with a MATLAB
 
 <p align="center">
   <img src="docs/sat.bmp" width="250"/>
-  <img src="docs/MATALAB_OUTPUT.png" width="250"/>
+  <img src="docs/MATALAB_OUT.png" width="250"/>
   <img src="docs/sobel_tb.png" width="250"/>
 </p>
 <p align="center"><em>Left: Input Image | Middle: MATLAB Output | Right: Testbench Output</em></p>
