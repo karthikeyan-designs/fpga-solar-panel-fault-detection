@@ -12,7 +12,7 @@
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
-- [Debugging & Validation](#debugging--validation)
+- [Debugging and Validation](#debugging-and-validation)
 - [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
@@ -324,7 +324,7 @@ This combination enables **low-latency and efficient image processing**, making 
 
 ---
 
-## 🔍 Debugging & Validation
+## 🔍 Debugging and Validation
 
 - Resolved PIO direction ambiguity (Platform Designer follows HPS perspective) 
 - Identified excessive black pixels in FPGA output; ruled out BMP/data issues  
