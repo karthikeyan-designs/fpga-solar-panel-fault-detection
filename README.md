@@ -12,6 +12,7 @@
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
+- Debugging & Validation
 - [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
@@ -322,6 +323,43 @@ By offloading the computationally intensive Sobel edge detection to the FPGA, th
 This combination enables **low-latency and efficient image processing**, making the approach suitable for real-time embedded applications.
 
 ---
+
+## 🔍 Debugging & Validation
+
+- Resolved PIO direction ambiguity (Platform Designer follows HPS perspective) 
+- Identified excessive black pixels in FPGA output; ruled out BMP/data issues  
+- Root cause: HPS–FPGA clock mismatch (~800 MHz vs 50 MHz) causing multi-cycle `data_valid` and repeated buffer shifts  
+- Implemented edge-triggered control using double flip-flop synchronizer to ensure single execution per pixel  
+- Achieved correct Sobel output matching testbench and MATLAB results
+
+### Synchronization Logic (2-FF)
+
+```verilog
+reg dv_ff1, dv_ff2;
+
+always @(posedge CLOCK_50) begin
+    dv_ff1 <= data_valid;
+    dv_ff2 <= dv_ff1;
+end
+
+wire data_valid_rise = dv_ff1 & ~dv_ff2;
+```
+### Timing Behavior
+![data_valid synchronization](docs/timing.png)
+
+- Before fix: `data_valid` stays high for multiple FPGA cycles → repeated buffer shifts → incorrect (black) output  
+- After fix: Rising-edge detection (2-FF) → single execution per pixel → correct Sobel output  
+
+> Note: Diagram is a conceptual timing illustration of the issue and fix.
+### Output Comparison
+
+| Before Fix | After Fix |
+|-----------|----------|
+| ![Before output](docs/before_fix.bmp) | ![After output](docs/FPGA_OUT.png) |
+
+- Before fix: Repeated buffer shifts produce excessive black pixels (incorrect edges)  
+- After fix: Single-cycle execution yields correct edge-detected image matching testbench  
+
 ## Limitations & Future Work
 
 - Current Sobel implementation is **not fully pipelined**; introducing staged pipelining can improve throughput  
