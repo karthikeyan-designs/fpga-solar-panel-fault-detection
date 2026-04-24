@@ -110,7 +110,7 @@ The FPGA design is deployed on the DE1-SoC board, where the HPS communicates wit
 The design is synthesized and programmed using **Quartus Prime**, and the successful configuration of the FPGA is verified through the **Programmer tool (100% completion)**.
 ## Features
 
-- Sobel edge detection implemented in **Verilog** on FPGA for deterministic, parallel execution
+- Sobel edge detection implemented in **Verilog** on FPGA for deterministic, hardware-level execution
 - **HPS–FPGA communication** via memory-mapped PIO registers over AXI Lightweight bridge
 - Double flip-flop synchroniser for safe cross-clock-domain signal handling
 - Parallel crack and dust classification pipelines running on the HPS
@@ -161,17 +161,9 @@ fpga-solar-panel-fault-detection/
 │ ├── hps_crack_detections/
 │ └── hps_dust_detections/
 │
-└── docs/ # Diagrams and execution screenshots
-├── block.png
-├── pd_interface.png
-├── sobel_kernel.png
-├── de1soc_setup.jpeg
-├── quartus_programmer.png
-└── execution_time_images...
+└── docs/   # Diagrams, hardware setup, validation, execution screenshots
 
 ```
-
-> Note: Only sample images are included...
 
 ---
 
@@ -197,14 +189,14 @@ gcc -std=c99 -O1 -o phy fpga_multi_sobel_clean.c -lrt -lm
 ```
 ### 4. Run Programs
 ```
-./sobel_dfftime
+./phy
 ```
 ### 5. Copy Output to USB
 ```
 cp /home/root/sobel_fifo_out.bmp /mnt/usb/
 cp -r /home/root/fpga_sobel_realtime_mixed /mnt/usb/
 
-ls /mnt/usb
+ls /mnt
 
 sync
 umount /mnt/usb
