@@ -324,7 +324,7 @@ This combination enables **low-latency and efficient image processing**, making 
 
 ---
 
-## 🔍 Debugging and Validation
+## Debugging and Validation
 
 - Resolved PIO direction ambiguity (Platform Designer follows HPS perspective) 
 - Identified excessive black pixels in FPGA output; ruled out BMP/data issues  
