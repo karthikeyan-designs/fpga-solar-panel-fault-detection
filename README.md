@@ -12,6 +12,7 @@
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
+- Debugging & Validation
 - [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
@@ -238,9 +239,9 @@ The Sobel edge detection design was first verified using a Verilog testbench (TB
 The edge-detected output generated from the testbench was compared with a MATLAB-based Sobel implementation to ensure functional correctness.
 
 <p align="center">
-  <img src="results/input.png" width="250"/>
-  <img src="results/matlab_output.png" width="250"/>
-  <img src="results/tb_output.png" width="250"/>
+  <img src="docs/sat.bmp" width="250"/>
+  <img src="docs/MATALAB_OUT.png" width="250"/>
+  <img src="docs/sobel_tb.png" width="250"/>
 </p>
 <p align="center"><em>Left: Input Image | Middle: MATLAB Output | Right: Testbench Output</em></p>
 
@@ -249,8 +250,8 @@ The results show that the testbench implementation closely matches the MATLAB-ge
 Further validation was performed by comparing the testbench output with the FPGA-generated output obtained through the HPS–FPGA system.
 
 <p align="center">
-  <img src="results/tb_output.png" width="300"/>
-  <img src="results/fpga_output.png" width="300"/>
+  <img src="docs/sobel_tb.png" width="300"/>
+  <img src="docs/FPGA_OUT.png" width="300"/>
 </p>
 <p align="center"><em>Left: Testbench Output | Right: FPGA Output</em></p>
 
@@ -322,6 +323,43 @@ By offloading the computationally intensive Sobel edge detection to the FPGA, th
 This combination enables **low-latency and efficient image processing**, making the approach suitable for real-time embedded applications.
 
 ---
+
+## 🔍 Debugging & Validation
+
+- Resolved PIO direction ambiguity (Platform Designer follows HPS perspective) 
+- Identified excessive black pixels in FPGA output; ruled out BMP/data issues  
+- Root cause: HPS–FPGA clock mismatch (~800 MHz vs 50 MHz) causing multi-cycle `data_valid` and repeated buffer shifts  
+- Implemented edge-triggered control using double flip-flop synchronizer to ensure single execution per pixel  
+- Achieved correct Sobel output matching testbench and MATLAB results
+
+### Synchronization Logic (2-FF)
+
+```verilog
+reg dv_ff1, dv_ff2;
+
+always @(posedge CLOCK_50) begin
+    dv_ff1 <= data_valid;
+    dv_ff2 <= dv_ff1;
+end
+
+wire data_valid_rise = dv_ff1 & ~dv_ff2;
+```
+### Timing Behavior
+![data_valid synchronization](docs/timing.png)
+
+- Before fix: `data_valid` stays high for multiple FPGA cycles → repeated buffer shifts → incorrect (black) output  
+- After fix: Rising-edge detection (2-FF) → single execution per pixel → correct Sobel output  
+
+> Note: Diagram is a conceptual timing illustration of the issue and fix.
+### Output Comparison
+
+| Before Fix | After Fix |
+|-----------|----------|
+| ![Before output](docs/before_fix.bmp) | ![After output](docs/FPGA_OUT.png) |
+
+- Before fix: Repeated buffer shifts produce excessive black pixels (incorrect edges)  
+- After fix: Single-cycle execution yields correct edge-detected image matching testbench  
+
 ## Limitations & Future Work
 
 - Current Sobel implementation is **not fully pipelined**; introducing staged pipelining can improve throughput  
