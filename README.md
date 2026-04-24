@@ -12,7 +12,7 @@
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
-- Debugging & Validation
+- [Debugging & Validation](#debugging-&-validation)
 - [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
@@ -345,17 +345,33 @@ end
 wire data_valid_rise = dv_ff1 & ~dv_ff2;
 ```
 ### Timing Behavior
-![data_valid synchronization](docs/timing.png)
+
+<p align="center">
+  <img src="docs/timing.png" width="600"/>
+</p>
 
 - Before fix: `data_valid` stays high for multiple FPGA cycles → repeated buffer shifts → incorrect (black) output  
 - After fix: Rising-edge detection (2-FF) → single execution per pixel → correct Sobel output  
 
 > Note: Diagram is a conceptual timing illustration of the issue and fix.
 ### Output Comparison
+<table>
+<tr>
+<th>Before Fix</th>
+<th>After Fix</th>
+</tr>
+<tr>
+<td align="center">
+  <img src="docs/before_fix.bmp" width="300"/>
+</td>
+<td align="center">
+  <img src="docs/FPGA_OUT.png" width="300"/>
+</td>
+</tr>
+</table>
 
-| Before Fix | After Fix |
-|-----------|----------|
-| ![Before output](docs/before_fix.bmp) | ![After output](docs/FPGA_OUT.png) |
+- Before fix: Repeated buffer shifts produce excessive black pixels (incorrect edges)  
+- After fix: Single-cycle execution yields correct edge-detected image matching testbench  
 
 - Before fix: Repeated buffer shifts produce excessive black pixels (incorrect edges)  
 - After fix: Single-cycle execution yields correct edge-detected image matching testbench  
