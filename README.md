@@ -232,9 +232,33 @@ umount /mnt
 ```
 
 
-### 5. Verify with MATLAB (optional)
+### 5. Verification with MATLAB
 
-Open `matlab/sobel_reference.m` and point it to any test image to compare MATLAB Sobel output against the FPGA-generated result. Use `matlab/hex_to_bmp.m` to convert testbench `.hex` output to a viewable BMP.
+The Sobel edge detection design was first verified using a Verilog testbench (TB).  
+The edge-detected output generated from the testbench was compared with a MATLAB-based Sobel implementation to ensure functional correctness.
+
+<p align="center">
+  <img src="results/input.png" width="250"/>
+  <img src="results/matlab_output.png" width="250"/>
+  <img src="results/tb_output.png" width="250"/>
+</p>
+<p align="center"><em>Left: Input Image | Middle: MATLAB Output | Right: Testbench Output</em></p>
+
+The results show that the testbench implementation closely matches the MATLAB-generated output.
+
+Further validation was performed by comparing the testbench output with the FPGA-generated output obtained through the HPS–FPGA system.
+
+<p align="center">
+  <img src="results/tb_output.png" width="300"/>
+  <img src="results/fpga_output.png" width="300"/>
+</p>
+<p align="center"><em>Left: Testbench Output | Right: FPGA Output</em></p>
+
+The FPGA output matches the testbench results, confirming correct hardware implementation.
+
+> Note: Minor differences may exist compared to MATLAB outputs due to differences in implementation details such as filtering, boundary handling, and numerical precision.
+
+
 
 ---
 
