@@ -5,12 +5,14 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Key Design Highlights](#key-design-highlights)
 - [System Architecture](#system-architecture)
 - [Hardware Setup](#hardware-setup)
 - [Features](#features)
 - [Hardware & Software Requirements](#hardware--software-requirements)
 - [Repository Structure](#repository-structure)
 - [Results](#results)
+- [Limitations & Future Work](#limitations--future-work)
 - [Team](#team)
 - [Supervisor](#supervisor)
 
@@ -26,6 +28,14 @@ This project implements an **FPGA-based hardware accelerator** on the **DE1-SoC 
 - 🔴 Physical damage (cracks / fractures)
 - 🟡 Dust / surface contamination
 - 🟢 Clean panel
+
+---
+## Key Design Highlights
+
+- Designed a hardware–software co-design system using HPS–FPGA architecture  
+- Accelerated Sobel edge detection using Verilog-based FPGA implementation  
+- Implemented memory-mapped AXI interface via PIO for efficient data transfer  
+- Achieved ~2× speedup compared to CPU-based implementation
 
 ---
 
@@ -120,47 +130,47 @@ The design is synthesized and programmed using **Quartus Prime**, and the succes
 | Image format | BMP (512×512, 8-bit grayscale) |
 
 ---
-
 ## Repository Structure
-
 ```
 fpga-solar-panel-fault-detection/
 ├── README.md
-├── LICENSE
-├── .gitignore
-├── report.pdf                        # Full project report
 │
-├── fpga/                             # Verilog source & Quartus project
-│   ├── sobel_edge_detect.v           # Top-level Sobel module
-│   ├── sobel_tb.v                    # Verilog testbench
-│   ├── platform_designer.qsys        # Platform Designer system
-│   └── quartus_project.qpf           # Quartus project file
+├── fpga/ # Verilog RTL + Quartus project
+│ ├── edge_vision_sobel.v # Sobel edge detection module
+│ ├── tb_sobel.v # Verilog testbench
+│ ├── edgevision_pd.qsys # Platform Designer system
+│ └── edge_vision_sobel.qpf # Quartus project file
 │
-├── hps/                              # C code running on ARM HPS
-│   ├── main.c                        # Pipeline entry point
-│   ├── classifier.c / classifier.h   # Crack, dust, clean logic
-│   ├── bmp_utils.c / bmp_utils.h     # BMP read/write helpers
-│   └── Makefile                      # Cross-compilation Makefile
+├── hps/ # C code (HPS-side processing)
+│ ├── hps_fpga_io.c # HPS–FPGA communication
+│ └── hps_feature_extraction.c # Crack & dust detection logic
 │
-├── matlab/                           # Reference & verification scripts
-│   ├── sobel_reference.m             # MATLAB Sobel reference model
-│   └── hex_to_bmp.m                  # Convert testbench HEX → BMP
+├── matlab/ # Verification & utilities
+│ ├── sobel_matlab.m # MATLAB reference implementation
+│ ├── jpg_bmp_conversion.m # Image conversion utility
+│ └── jpeg_bmp_conversion.m # Alternate conversion script
 │
-├── dataset/                          # Sample solar panel images
-│   ├── clean/
-│   ├── dust/
-│   └── physical_damage/
+├── dataset/ # Sample input images
+│ ├── clean/
+│ ├── dust/
+│ └── physical_damages/
 │
-├── results/                          # Output images & performance data
-│   ├── edge_fpga_*.bmp
-│   └── performance_comparison.png
+├── results/ # Output results and detections
+│ ├── fpga_sobel_edge_detections/
+│ ├── hps_crack_detections/
+│ └── hps_dust_detections/
 │
-└── docs/                             # Diagrams and figures
-    ├── block_diagram.png
-    └── flowchart.png
+└── docs/ # Diagrams and execution screenshots
+├── block.png
+├── pd_interface.png
+├── sobel_kernel.png
+├── de1soc_setup.jpeg
+├── quartus_programmer.png
+└── execution_time_images...
+
 ```
 
-> **Note:** The `dataset/` folder contains only sample images. The full 16-image ground-truth set used for validation is not included due to size. Place your own `.bmp` images in the respective subfolders before running.
+> Note: Only sample images are included...
 
 ---
 
@@ -222,9 +232,33 @@ umount /mnt
 ```
 
 
-### 5. Verify with MATLAB (optional)
+### 5. Verification with MATLAB
 
-Open `matlab/sobel_reference.m` and point it to any test image to compare MATLAB Sobel output against the FPGA-generated result. Use `matlab/hex_to_bmp.m` to convert testbench `.hex` output to a viewable BMP.
+The Sobel edge detection design was first verified using a Verilog testbench (TB).  
+The edge-detected output generated from the testbench was compared with a MATLAB-based Sobel implementation to ensure functional correctness.
+
+<p align="center">
+  <img src="results/input.png" width="250"/>
+  <img src="results/matlab_output.png" width="250"/>
+  <img src="results/tb_output.png" width="250"/>
+</p>
+<p align="center"><em>Left: Input Image | Middle: MATLAB Output | Right: Testbench Output</em></p>
+
+The results show that the testbench implementation closely matches the MATLAB-generated output.
+
+Further validation was performed by comparing the testbench output with the FPGA-generated output obtained through the HPS–FPGA system.
+
+<p align="center">
+  <img src="results/tb_output.png" width="300"/>
+  <img src="results/fpga_output.png" width="300"/>
+</p>
+<p align="center"><em>Left: Testbench Output | Right: FPGA Output</em></p>
+
+The FPGA output matches the testbench results, confirming correct hardware implementation.
+
+> Note: Minor differences may exist compared to MATLAB outputs due to differences in implementation details such as filtering, boundary handling, and numerical precision.
+
+
 
 ---
 
@@ -286,6 +320,18 @@ The results demonstrate that the **HPS–FPGA hardware–software co-design appr
 By offloading the computationally intensive Sobel edge detection to the FPGA, the system achieves faster processing through hardware-level execution, while the HPS efficiently manages control and post-processing tasks.
 
 This combination enables **low-latency and efficient image processing**, making the approach suitable for real-time embedded applications.
+
+---
+## Limitations & Future Work
+
+- Current Sobel implementation is **not fully pipelined**; introducing staged pipelining can improve throughput  
+- Integrating **FIFO buffers and DMA in Platform Designer** can optimize data transfer and further reduce execution time  
+- Fault detection uses a **rule-based approach**, which may lead to misclassification in complex scenarios
+
+### Future Scope
+
+- Enable **real-time video processing using camera interfaces**, replacing static image-based input  
+- Incorporate **AI/ML-based models** on FPGA or HPS to improve detection accuracy and robustness  
 
 ## Team
 
