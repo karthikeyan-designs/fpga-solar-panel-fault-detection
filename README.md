@@ -50,6 +50,7 @@ The system follows a **hardware–software co-design architecture**, where compu
   <img src="docs/block.png" width="600"/>
 </p>
 <p align="center"><em>Overall HPS–FPGA co-design architecture for solar panel defect detection</em></p>
+
 ### Data Flow
 
 1. **Image Acquisition (HPS)**
