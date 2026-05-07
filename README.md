@@ -258,6 +258,17 @@ The FPGA output matches the testbench results, confirming correct hardware imple
 
 ## Results
 
+### Feature Extraction
+
+| Feature | Description | Relevance | 
+|-------------|----------------------|-------|
+| Edge Pixel Count | Total number of non-zero pixels in the binary map  | Overall defect extent | 
+| Edge Density | Edge pixel count normalised by image area | Distinguishes dust (diffuse) from cracks (localised) |
+| Crack Score | Accumulated length of thinned skeleton segments exceeding MIN_CRACK_AREA (default 200px) | Primary crack indicator |
+| Aspect Ratio | Ratio of bounding box width to height for largest connected component | Linearity — high ratio indicates crack & low ratio indicates dust | 
+
+---
+
 ### Classification Accuracy
 
 | Fault Class | Correctly Classified | Total | Accuracy |
